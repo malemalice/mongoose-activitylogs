@@ -64,13 +64,13 @@ function mongooseLogsPlugin(schema, options) {
     });
  // create logs for delete action
     schema.post('findOneAndRemove', function(doc, next) {
-      var referenceDocument = Object.assign({}, doc);
-
+      var referenceDocument = Object.assign({}, this._conditions);
+      // delete this._conditions.modifiedBy
         var activity = {
             collectionType: options.schemaName,
             referenceDocument: referenceDocument,
             action: options.deleteAction || 'deleted',
-            loggedBy: doc.modifiedBy,
+            loggedBy: referenceDocument && referenceDocument.modifiedBy,
             createdAt: Date.now()
         };
         var ALog = new ActivityLog(activity);
